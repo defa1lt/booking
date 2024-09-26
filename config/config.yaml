@@ -1,0 +1,14 @@
+service_name: "validator"
+
+Postgres:
+  host: "localhost"
+  port: "5432"
+  user: "habrpguser"
+  password: "pgpwd4habr"
+  DBName: "habrdb"
+  sslMode: "allow"
+
+Server: #http
+  host: "0.0.0.0"
+  port: "3000"
+
