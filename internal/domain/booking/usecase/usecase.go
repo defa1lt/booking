@@ -7,9 +7,29 @@ import (
 	"go.uber.org/zap"
 )
 
+type HotelUc interface {
+	OnStart(ctx context.Context) error
+	OnStop(ctx context.Context) error
+	CreateHotel(ctx context.Context, hotel *entities.Hotel) (int, error)
+	GetHotelByID(ctx context.Context, hotelID int) (*entities.Hotel, error)
+	UpdateHotel(ctx context.Context, hotel *entities.Hotel) error
+	DeleteHotel(ctx context.Context, hotelID int) error
+	CreateRoom(ctx context.Context, room *entities.Room) (int, error)
+	GetRoomByID(ctx context.Context, roomID int) (*entities.Room, error)
+	UpdateRoom(ctx context.Context, room *entities.Room) error
+	DeleteRoom(ctx context.Context, roomID int) error
+	CreateBooking(ctx context.Context, booking *entities.Booking) (int, error)
+	GetBookingByID(ctx context.Context, bookingID int) (*entities.Booking, error)
+	UpdateBooking(ctx context.Context, booking *entities.Booking) error
+	DeleteBooking(ctx context.Context, bookingID int) error
+	CreateCustomer(ctx context.Context, customer *entities.Customer) (int, error)
+	GetCustomerByID(ctx context.Context, customerID int) (*entities.Customer, error)
+	UpdateCustomer(ctx context.Context, customer *entities.Customer) error
+	DeleteCustomer(ctx context.Context, customerID int) error
+}
 type Usecase struct {
 	log  *zap.Logger
-	Repo *postgres.Repository
+	Repo HotelUc
 }
 
 func NewUsecase(logger *zap.Logger, Repo *postgres.Repository) (*Usecase, error) {
