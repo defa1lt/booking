@@ -14,19 +14,28 @@ type HotelUc interface {
 	GetHotelByID(ctx context.Context, hotelID int) (*entities.Hotel, error)
 	UpdateHotel(ctx context.Context, hotel *entities.Hotel) error
 	DeleteHotel(ctx context.Context, hotelID int) error
+	GetAllHotels(ctx context.Context) ([]*entities.Hotel, error)
+
 	CreateRoom(ctx context.Context, room *entities.Room) (int, error)
 	GetRoomByID(ctx context.Context, roomID int) (*entities.Room, error)
 	UpdateRoom(ctx context.Context, room *entities.Room) error
 	DeleteRoom(ctx context.Context, roomID int) error
+	GetAllRooms(ctx context.Context) ([]*entities.Room, error)
+	GetRoomsByHotelID(ctx context.Context, hotelID int) ([]*entities.Room, error)
+
 	CreateBooking(ctx context.Context, booking *entities.Booking) (int, error)
 	GetBookingByID(ctx context.Context, bookingID int) (*entities.Booking, error)
 	UpdateBooking(ctx context.Context, booking *entities.Booking) error
 	DeleteBooking(ctx context.Context, bookingID int) error
+	GetAllBookings(ctx context.Context) ([]*entities.Booking, error)
+
 	CreateCustomer(ctx context.Context, customer *entities.Customer) (int, error)
 	GetCustomerByID(ctx context.Context, customerID int) (*entities.Customer, error)
 	UpdateCustomer(ctx context.Context, customer *entities.Customer) error
 	DeleteCustomer(ctx context.Context, customerID int) error
+	GetAllCustomers(ctx context.Context) ([]*entities.Customer, error)
 }
+
 type Usecase struct {
 	log  *zap.Logger
 	Repo HotelUc
@@ -187,4 +196,52 @@ func (u *Usecase) DeleteCustomer(ctx context.Context, customerID int) error {
 		return err
 	}
 	return nil
+}
+
+// Получение всех отелей
+func (u *Usecase) GetAllHotels(ctx context.Context) ([]*entities.Hotel, error) {
+	hotels, err := u.Repo.GetAllHotels(ctx)
+	if err != nil {
+		u.log.Error("fail to get all hotels", zap.Error(err))
+		return nil, err
+	}
+	return hotels, nil
+}
+
+// Получение всех комнат
+func (u *Usecase) GetAllRooms(ctx context.Context) ([]*entities.Room, error) {
+	rooms, err := u.Repo.GetAllRooms(ctx)
+	if err != nil {
+		u.log.Error("fail to get all rooms", zap.Error(err))
+		return nil, err
+	}
+	return rooms, nil
+}
+
+// Получение всех бронирований
+func (u *Usecase) GetAllBookings(ctx context.Context) ([]*entities.Booking, error) {
+	bookings, err := u.Repo.GetAllBookings(ctx)
+	if err != nil {
+		u.log.Error("fail to get all bookings", zap.Error(err))
+		return nil, err
+	}
+	return bookings, nil
+}
+
+func (u *Usecase) GetAllCustomers(ctx context.Context) ([]*entities.Customer, error) {
+	customers, err := u.Repo.GetAllCustomers(ctx)
+	if err != nil {
+		u.log.Error("fail to get all customers", zap.Error(err))
+		return nil, err
+	}
+	return customers, nil
+}
+
+func (u *Usecase) GetRoomsByHotelID(ctx context.Context, hotelID int) ([]*entities.Room, error) {
+	rooms, err := u.Repo.GetRoomsByHotelID(ctx, hotelID)
+	if err != nil {
+		u.log.Error("fail to get rooms by hotel ID", zap.Error(err))
+		return nil, err
+	}
+	return rooms, nil
 }

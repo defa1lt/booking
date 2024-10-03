@@ -1,0 +1,25 @@
+schema:
+  - internal/domain/booking/delivery/graph/schema.graphqls
+
+exec:
+  filename: internal/domain/booking/delivery/graph/generated/generated.go
+  package: generated
+
+model:
+  filename: internal/domain/booking/delivery/graph/model/models_gen.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  dir: internal/domain/booking/delivery/graph
+  package: graph
+
+models:
+  Hotel:
+    model: booking/internal/domain/booking/entities.Hotel
+  Room:
+    model: booking/internal/domain/booking/entities.Room
+  Booking:
+    model: booking/internal/domain/booking/entities.Booking
+  Customer:
+    model: booking/internal/domain/booking/entities.Customer

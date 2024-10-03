@@ -53,6 +53,7 @@ func (r *Repository) OnStop(ctx context.Context) error {
 }
 
 const (
+	// Queries for Hotel
 	qCreateHotel = `
 		INSERT INTO hotels (name, address) 
 		VALUES ($1, $2)
@@ -72,7 +73,12 @@ const (
 		DELETE FROM hotels 
 		WHERE id = $1;
 	`
+	qGetAllHotels = `
+		SELECT id, name, address
+		FROM hotels;
+	`
 
+	// Queries for Room
 	qCreateRoom = `
 		INSERT INTO rooms (hotel_id, number, type, price) 
 		VALUES ($1, $2, $3, $4)
@@ -92,7 +98,17 @@ const (
 		DELETE FROM rooms 
 		WHERE id = $1;
 	`
+	qGetAllRooms = `
+		SELECT id, hotel_id, number, type, price
+		FROM rooms;
+	`
+	qGetRoomsByHotelID = `
+		SELECT id, hotel_id, number, type, price
+		FROM rooms
+		WHERE hotel_id = $1;
+	`
 
+	// Queries for Booking
 	qCreateBooking = `
 		INSERT INTO bookings (room_id, customer_id, check_in, check_out, status) 
 		VALUES ($1, $2, $3, $4, $5)
@@ -112,7 +128,12 @@ const (
 		DELETE FROM bookings 
 		WHERE id = $1;
 	`
+	qGetAllBookings = `
+		SELECT id, room_id, customer_id, check_in, check_out, status
+		FROM bookings;
+	`
 
+	// Queries for Customer
 	qCreateCustomer = `
 		INSERT INTO customers (first_name, last_name, email, phone) 
 		VALUES ($1, $2, $3, $4)
@@ -132,7 +153,15 @@ const (
 		DELETE FROM customers 
 		WHERE id = $1;
 	`
+	qGetAllCustomers = `
+		SELECT id, first_name, last_name, email, phone
+		FROM customers;
+	`
 )
+
+// ----------------------
+// Hotel Methods
+// ----------------------
 
 func (r *Repository) CreateHotel(ctx context.Context, hotel *entities.Hotel) (int, error) {
 	var hotelID int
@@ -172,7 +201,27 @@ func (r *Repository) DeleteHotel(ctx context.Context, hotelID int) error {
 	return nil
 }
 
-// Методы для модели Room
+func (r *Repository) GetAllHotels(ctx context.Context) ([]*entities.Hotel, error) {
+	rows, err := r.DB.Query(ctx, qGetAllHotels)
+	if err != nil {
+		r.log.Error("GetAllHotels: error querying hotels", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var hotels []*entities.Hotel
+	for rows.Next() {
+		var hotel entities.Hotel
+		err := rows.Scan(&hotel.ID, &hotel.Name, &hotel.Address)
+		if err != nil {
+			r.log.Error("GetAllHotels: error scanning row", zap.Error(err))
+			return nil, err
+		}
+		hotels = append(hotels, &hotel)
+	}
+
+	return hotels, nil
+}
 
 func (r *Repository) CreateRoom(ctx context.Context, room *entities.Room) (int, error) {
 	var roomID int
@@ -212,7 +261,49 @@ func (r *Repository) DeleteRoom(ctx context.Context, roomID int) error {
 	return nil
 }
 
-// Методы для модели Booking
+func (r *Repository) GetAllRooms(ctx context.Context) ([]*entities.Room, error) {
+	rows, err := r.DB.Query(ctx, qGetAllRooms)
+	if err != nil {
+		r.log.Error("GetAllRooms: error querying rooms", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rooms []*entities.Room
+	for rows.Next() {
+		var room entities.Room
+		err := rows.Scan(&room.ID, &room.HotelID, &room.Number, &room.Type, &room.Price)
+		if err != nil {
+			r.log.Error("GetAllRooms: error scanning row", zap.Error(err))
+			return nil, err
+		}
+		rooms = append(rooms, &room)
+	}
+
+	return rooms, nil
+}
+
+func (r *Repository) GetRoomsByHotelID(ctx context.Context, hotelID int) ([]*entities.Room, error) {
+	rows, err := r.DB.Query(ctx, qGetRoomsByHotelID, hotelID)
+	if err != nil {
+		r.log.Error("GetRoomsByHotelID: error querying rooms", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rooms []*entities.Room
+	for rows.Next() {
+		var room entities.Room
+		err := rows.Scan(&room.ID, &room.HotelID, &room.Number, &room.Type, &room.Price)
+		if err != nil {
+			r.log.Error("GetRoomsByHotelID: error scanning row", zap.Error(err))
+			return nil, err
+		}
+		rooms = append(rooms, &room)
+	}
+
+	return rooms, nil
+}
 
 func (r *Repository) CreateBooking(ctx context.Context, booking *entities.Booking) (int, error) {
 	var bookingID int
@@ -252,7 +343,27 @@ func (r *Repository) DeleteBooking(ctx context.Context, bookingID int) error {
 	return nil
 }
 
-// Методы для модели Customer
+func (r *Repository) GetAllBookings(ctx context.Context) ([]*entities.Booking, error) {
+	rows, err := r.DB.Query(ctx, qGetAllBookings)
+	if err != nil {
+		r.log.Error("GetAllBookings: error querying bookings", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bookings []*entities.Booking
+	for rows.Next() {
+		var booking entities.Booking
+		err := rows.Scan(&booking.ID, &booking.RoomID, &booking.CustomerID, &booking.CheckIn, &booking.CheckOut, &booking.Status)
+		if err != nil {
+			r.log.Error("GetAllBookings: error scanning row", zap.Error(err))
+			return nil, err
+		}
+		bookings = append(bookings, &booking)
+	}
+
+	return bookings, nil
+}
 
 func (r *Repository) CreateCustomer(ctx context.Context, customer *entities.Customer) (int, error) {
 	var customerID int
@@ -290,4 +401,26 @@ func (r *Repository) DeleteCustomer(ctx context.Context, customerID int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *Repository) GetAllCustomers(ctx context.Context) ([]*entities.Customer, error) {
+	rows, err := r.DB.Query(ctx, qGetAllCustomers)
+	if err != nil {
+		r.log.Error("GetAllCustomers: error querying customers", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var customers []*entities.Customer
+	for rows.Next() {
+		var customer entities.Customer
+		err := rows.Scan(&customer.ID, &customer.FirstName, &customer.LastName, &customer.Email, &customer.Phone)
+		if err != nil {
+			r.log.Error("GetAllCustomers: error scanning row", zap.Error(err))
+			return nil, err
+		}
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
 }

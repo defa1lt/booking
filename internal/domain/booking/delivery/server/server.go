@@ -1,12 +1,19 @@
+// internal/domain/booking/delivery/server/server.go
+
 package server
 
 import (
 	"booking/config"
+	"booking/internal/domain/booking/delivery/graph"
+	"booking/internal/domain/booking/delivery/graph/generated"
 	"booking/internal/domain/booking/delivery/routes"
 	"booking/internal/domain/booking/entities"
 	"booking/internal/domain/booking/usecase"
 	"context"
 	"fmt"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"strconv"
@@ -61,6 +68,19 @@ func (s *Server) OnStart(_ context.Context) error {
 
 	routes.SetupRouter(s.API, handlers)
 
+	gqlResolver := &graph.Resolver{Usecase: s.Usecase}
+
+	gqlServer := handler.NewDefaultServer(
+		generated.NewExecutableSchema(
+			generated.Config{Resolvers: gqlResolver},
+		),
+	)
+
+	s.API.Post("/graphql", adaptor.HTTPHandler(gqlServer))
+	s.API.Get("/graphql", adaptor.HTTPHandler(
+		playground.Handler("GraphQL Playground", "/graphql")),
+	)
+
 	go func() {
 		s.logger.Debug("HTTP server started on :3000")
 		if err := s.API.Listen(":3000"); err != nil {
@@ -95,6 +115,66 @@ func generateHotelLinks(hotelID int) []Link {
 	}
 }
 
+func generateRoomLinks(roomID int) []Link {
+	return []Link{
+		{
+			Rel:  "self",
+			Href: fmt.Sprintf("/rooms/%d", roomID),
+			Type: "GET",
+		},
+		{
+			Rel:  "update",
+			Href: fmt.Sprintf("/rooms/%d", roomID),
+			Type: "PUT",
+		},
+		{
+			Rel:  "delete",
+			Href: fmt.Sprintf("/rooms/%d", roomID),
+			Type: "DELETE",
+		},
+	}
+}
+
+func generateBookingLinks(bookingID int) []Link {
+	return []Link{
+		{
+			Rel:  "self",
+			Href: fmt.Sprintf("/bookings/%d", bookingID),
+			Type: "GET",
+		},
+		{
+			Rel:  "update",
+			Href: fmt.Sprintf("/bookings/%d", bookingID),
+			Type: "PUT",
+		},
+		{
+			Rel:  "delete",
+			Href: fmt.Sprintf("/bookings/%d", bookingID),
+			Type: "DELETE",
+		},
+	}
+}
+
+func generateCustomerLinks(customerID int) []Link {
+	return []Link{
+		{
+			Rel:  "self",
+			Href: fmt.Sprintf("/customers/%d", customerID),
+			Type: "GET",
+		},
+		{
+			Rel:  "update",
+			Href: fmt.Sprintf("/customers/%d", customerID),
+			Type: "PUT",
+		},
+		{
+			Rel:  "delete",
+			Href: fmt.Sprintf("/customers/%d", customerID),
+			Type: "DELETE",
+		},
+	}
+}
+
 func (s *Server) CreateHotel(c *fiber.Ctx) error {
 	var hotel entities.Hotel
 	if err := c.BodyParser(&hotel); err != nil {
@@ -107,6 +187,7 @@ func (s *Server) CreateHotel(c *fiber.Ctx) error {
 		s.logger.Error("Error creating hotel", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
+	hotel.ID = hotelID
 
 	response := HypermediaResponse{
 		Data:  hotel,
@@ -176,26 +257,6 @@ func (s *Server) DeleteHotel(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func generateRoomLinks(roomID int) []Link {
-	return []Link{
-		{
-			Rel:  "self",
-			Href: fmt.Sprintf("/rooms/%d", roomID),
-			Type: "GET",
-		},
-		{
-			Rel:  "update",
-			Href: fmt.Sprintf("/rooms/%d", roomID),
-			Type: "PUT",
-		},
-		{
-			Rel:  "delete",
-			Href: fmt.Sprintf("/rooms/%d", roomID),
-			Type: "DELETE",
-		},
-	}
-}
-
 func (s *Server) CreateRoom(c *fiber.Ctx) error {
 	var room entities.Room
 	if err := c.BodyParser(&room); err != nil {
@@ -208,6 +269,7 @@ func (s *Server) CreateRoom(c *fiber.Ctx) error {
 		s.logger.Error("Error creating room", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
+	room.ID = roomID
 
 	response := HypermediaResponse{
 		Data:  room,
@@ -277,26 +339,6 @@ func (s *Server) DeleteRoom(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func generateBookingLinks(bookingID int) []Link {
-	return []Link{
-		{
-			Rel:  "self",
-			Href: fmt.Sprintf("/bookings/%d", bookingID),
-			Type: "GET",
-		},
-		{
-			Rel:  "update",
-			Href: fmt.Sprintf("/bookings/%d", bookingID),
-			Type: "PUT",
-		},
-		{
-			Rel:  "delete",
-			Href: fmt.Sprintf("/bookings/%d", bookingID),
-			Type: "DELETE",
-		},
-	}
-}
-
 func (s *Server) CreateBooking(c *fiber.Ctx) error {
 	var booking entities.Booking
 	if err := c.BodyParser(&booking); err != nil {
@@ -309,6 +351,7 @@ func (s *Server) CreateBooking(c *fiber.Ctx) error {
 		s.logger.Error("Error creating booking", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
+	booking.ID = bookingID
 
 	response := HypermediaResponse{
 		Data:  booking,
@@ -377,27 +420,6 @@ func (s *Server) DeleteBooking(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusOK)
 }
-
-func generateCustomerLinks(customerID int) []Link {
-	return []Link{
-		{
-			Rel:  "self",
-			Href: fmt.Sprintf("/customers/%d", customerID),
-			Type: "GET",
-		},
-		{
-			Rel:  "update",
-			Href: fmt.Sprintf("/customers/%d", customerID),
-			Type: "PUT",
-		},
-		{
-			Rel:  "delete",
-			Href: fmt.Sprintf("/customers/%d", customerID),
-			Type: "DELETE",
-		},
-	}
-}
-
 func (s *Server) CreateCustomer(c *fiber.Ctx) error {
 	var customer entities.Customer
 	if err := c.BodyParser(&customer); err != nil {
@@ -410,6 +432,7 @@ func (s *Server) CreateCustomer(c *fiber.Ctx) error {
 		s.logger.Error("Error creating customer", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
+	customer.ID = customerID
 
 	response := HypermediaResponse{
 		Data:  customer,

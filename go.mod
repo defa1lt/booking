@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/99designs/gqlgen v0.17.54
+	github.com/gofiber/adaptor/v2 v2.2.1
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/spf13/viper v1.19.0

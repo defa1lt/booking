@@ -1,0 +1,60 @@
+type Hotel {
+  id: ID!
+  name: String!
+  address: String!
+  rooms: [Room!]!
+}
+
+type Room {
+  id: ID!
+  hotel: Hotel!
+  number: String!
+  type: String!
+  price: Float!
+}
+
+type Booking {
+  id: ID!
+  room: Room!
+  customer: Customer!
+  checkIn: String!
+  checkOut: String!
+  status: String!
+}
+
+type Customer {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+}
+
+type Query {
+  hotels: [Hotel!]!
+  hotel(id: ID!): Hotel
+  rooms: [Room!]!
+  room(id: ID!): Room
+  bookings: [Booking!]!
+  booking(id: ID!): Booking
+  customers: [Customer!]!
+  customer(id: ID!): Customer
+}
+
+type Mutation {
+  createHotel(name: String!, address: String!): Hotel!
+  updateHotel(id: ID!, name: String, address: String): Hotel!
+  deleteHotel(id: ID!): Boolean!
+
+  createRoom(hotelID: ID!, number: String!, type: String!, price: Float!): Room!
+  updateRoom(id: ID!, number: String, type: String, price: Float): Room!
+  deleteRoom(id: ID!): Boolean!
+
+  createBooking(roomID: ID!, customerID: ID!, checkIn: String!, checkOut: String!, status: String!): Booking!
+  updateBooking(id: ID!, checkIn: String, checkOut: String, status: String): Booking!
+  deleteBooking(id: ID!): Boolean!
+
+  createCustomer(firstName: String!, lastName: String!, email: String!, phone: String!): Customer!
+  updateCustomer(id: ID!, firstName: String, lastName: String, email: String, phone: String): Customer!
+  deleteCustomer(id: ID!): Boolean!
+}
