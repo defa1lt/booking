@@ -5,10 +5,10 @@ package server
 import (
 	"booking/config"
 	"booking/internal/domain/booking/delivery/graph"
-	"booking/internal/domain/booking/delivery/graph/generated"
 	"booking/internal/domain/booking/delivery/routes"
 	"booking/internal/domain/booking/entities"
 	"booking/internal/domain/booking/usecase"
+	"booking/pkg/graphQL/generated"
 	"context"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"

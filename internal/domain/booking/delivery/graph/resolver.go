@@ -6,7 +6,6 @@ import (
 	"booking/internal/domain/booking/usecase"
 )
 
-// Resolver служит зависимостью для резолверов
 type Resolver struct {
 	Usecase *usecase.Usecase
 }

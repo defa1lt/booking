@@ -84,8 +84,6 @@ func (u *Usecase) DeleteHotel(ctx context.Context, hotelID int) error {
 	return nil
 }
 
-// Методы для работы с моделью Room
-
 func (u *Usecase) CreateRoom(ctx context.Context, room *entities.Room) (int, error) {
 	roomID, err := u.Repo.CreateRoom(ctx, room)
 	if err != nil {
@@ -121,8 +119,6 @@ func (u *Usecase) DeleteRoom(ctx context.Context, roomID int) error {
 	}
 	return nil
 }
-
-// Методы для работы с моделью Booking
 
 func (u *Usecase) CreateBooking(ctx context.Context, booking *entities.Booking) (int, error) {
 	bookingID, err := u.Repo.CreateBooking(ctx, booking)
@@ -160,8 +156,6 @@ func (u *Usecase) DeleteBooking(ctx context.Context, bookingID int) error {
 	return nil
 }
 
-// Методы для работы с моделью Customer
-
 func (u *Usecase) CreateCustomer(ctx context.Context, customer *entities.Customer) (int, error) {
 	customerID, err := u.Repo.CreateCustomer(ctx, customer)
 	if err != nil {
@@ -198,7 +192,6 @@ func (u *Usecase) DeleteCustomer(ctx context.Context, customerID int) error {
 	return nil
 }
 
-// Получение всех отелей
 func (u *Usecase) GetAllHotels(ctx context.Context) ([]*entities.Hotel, error) {
 	hotels, err := u.Repo.GetAllHotels(ctx)
 	if err != nil {
@@ -208,7 +201,6 @@ func (u *Usecase) GetAllHotels(ctx context.Context) ([]*entities.Hotel, error) {
 	return hotels, nil
 }
 
-// Получение всех комнат
 func (u *Usecase) GetAllRooms(ctx context.Context) ([]*entities.Room, error) {
 	rooms, err := u.Repo.GetAllRooms(ctx)
 	if err != nil {
@@ -218,7 +210,6 @@ func (u *Usecase) GetAllRooms(ctx context.Context) ([]*entities.Room, error) {
 	return rooms, nil
 }
 
-// Получение всех бронирований
 func (u *Usecase) GetAllBookings(ctx context.Context) ([]*entities.Booking, error) {
 	bookings, err := u.Repo.GetAllBookings(ctx)
 	if err != nil {

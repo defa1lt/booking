@@ -53,7 +53,6 @@ func (r *Repository) OnStop(ctx context.Context) error {
 }
 
 const (
-	// Queries for Hotel
 	qCreateHotel = `
 		INSERT INTO hotels (name, address) 
 		VALUES ($1, $2)
@@ -78,7 +77,6 @@ const (
 		FROM hotels;
 	`
 
-	// Queries for Room
 	qCreateRoom = `
 		INSERT INTO rooms (hotel_id, number, type, price) 
 		VALUES ($1, $2, $3, $4)
@@ -108,7 +106,6 @@ const (
 		WHERE hotel_id = $1;
 	`
 
-	// Queries for Booking
 	qCreateBooking = `
 		INSERT INTO bookings (room_id, customer_id, check_in, check_out, status) 
 		VALUES ($1, $2, $3, $4, $5)
@@ -133,7 +130,6 @@ const (
 		FROM bookings;
 	`
 
-	// Queries for Customer
 	qCreateCustomer = `
 		INSERT INTO customers (first_name, last_name, email, phone) 
 		VALUES ($1, $2, $3, $4)
@@ -156,12 +152,9 @@ const (
 	qGetAllCustomers = `
 		SELECT id, first_name, last_name, email, phone
 		FROM customers;
+		
 	`
 )
-
-// ----------------------
-// Hotel Methods
-// ----------------------
 
 func (r *Repository) CreateHotel(ctx context.Context, hotel *entities.Hotel) (int, error) {
 	var hotelID int
