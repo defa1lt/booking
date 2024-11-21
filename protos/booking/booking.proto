@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package booking;
+
+import "protos/booking/common.proto";
+
+option go_package = "bookingpb";
+
+// Определение сущности бронирования
+message Booking {
+  int32 id = 1;                         // Идентификатор бронирования
+  int32 room_id = 2;                    // Идентификатор комнаты
+  int32 customer_id = 3;                // Идентификатор клиента
+  string check_in = 4;                  // Дата заезда (в формате ISO 8601)
+  string check_out = 5;                 // Дата выезда (в формате ISO 8601)
+  common.BookingStatus status = 6;      // Статус бронирования
+}
+
+// Запрос на создание бронирования
+message CreateBookingRequest {
+  int32 room_id = 1;                    // Идентификатор комнаты
+  int32 customer_id = 2;                // Идентификатор клиента
+  string check_in = 3;                  // Дата заезда
+  string check_out = 4;                 // Дата выезда
+  common.BookingStatus status = 5;      // Статус бронирования (опционально)
+}
+
+// Ответ на создание бронирования
+message CreateBookingResponse {
+  Booking booking = 1;                  // Созданное бронирование
+}
+
+// Запрос на получение информации о бронировании
+message GetBookingRequest {
+  int32 id = 1;                         // Идентификатор бронирования
+}
+
+// Ответ с информацией о бронировании
+message GetBookingResponse {
+  Booking booking = 1;                  // Информация о бронировании
+}
+
+// Запрос на обновление бронирования
+message UpdateBookingRequest {
+  int32 id = 1;                         // Идентификатор бронирования
+  string check_in = 2;                  // Новая дата заезда (опционально)
+  string check_out = 3;                 // Новая дата выезда (опционально)
+  common.BookingStatus status = 4;      // Новый статус бронирования (опционально)
+}
+
+// Ответ на обновление бронирования
+message UpdateBookingResponse {
+  Booking booking = 1;                  // Обновленное бронирование
+}
+
+// Запрос на удаление бронирования
+message DeleteBookingRequest {
+  int32 id = 1;                         // Идентификатор бронирования
+}
+
+// Ответ на удаление бронирования
+message DeleteBookingResponse {
+  bool success = 1;                     // Статус операции
+}
+
+// Запрос на получение списка всех бронирований
+message ListBookingsRequest {}
+
+// Ответ со списком бронирований
+message ListBookingsResponse {
+  repeated Booking bookings = 1;        // Список бронирований
+}
+
+// Сервис для управления бронированиями
+service BookingService {
+  rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
+  rpc GetBooking(GetBookingRequest) returns (GetBookingResponse);
+  rpc UpdateBooking(UpdateBookingRequest) returns (UpdateBookingResponse);
+  rpc DeleteBooking(DeleteBookingRequest) returns (DeleteBookingResponse);
+  rpc ListBookings(ListBookingsRequest) returns (ListBookingsResponse);
+}

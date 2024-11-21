@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package booking;
+
+import "protos/booking/common.proto";
+
+option go_package = "bookingpb";
+
+// Определение сущности комнаты
+message Room {
+  int32 id = 1;                   // Идентификатор комнаты
+  int32 hotel_id = 2;             // Идентификатор отеля
+  string number = 3;              // Номер комнаты
+  common.RoomType type = 4;       // Тип комнаты
+  double price = 5;               // Цена за ночь
+}
+
+// Запрос на создание комнаты
+message CreateRoomRequest {
+  int32 hotel_id = 1;             // Идентификатор отеля
+  string number = 2;              // Номер комнаты
+  common.RoomType type = 3;       // Тип комнаты
+  double price = 4;               // Цена за ночь
+}
+
+// Ответ на создание комнаты
+message CreateRoomResponse {
+  Room room = 1;                  // Созданная комната
+}
+
+// Запрос на получение информации о комнате
+message GetRoomRequest {
+  int32 id = 1;                   // Идентификатор комнаты
+}
+
+// Ответ с информацией о комнате
+message GetRoomResponse {
+  Room room = 1;                  // Информация о комнате
+}
+
+// Запрос на обновление комнаты
+message UpdateRoomRequest {
+  int32 id = 1;                   // Идентификатор комнаты
+  string number = 2;              // Новый номер комнаты (опционально)
+  common.RoomType type = 3;       // Новый тип комнаты (опционально)
+  double price = 4;               // Новая цена (опционально)
+}
+
+// Ответ на обновление комнаты
+message UpdateRoomResponse {
+  Room room = 1;                  // Обновленная комната
+}
+
+// Запрос на удаление комнаты
+message DeleteRoomRequest {
+  int32 id = 1;                   // Идентификатор комнаты
+}
+
+// Ответ на удаление комнаты
+message DeleteRoomResponse {
+  bool success = 1;               // Статус операции
+}
+
+// Запрос на получение списка комнат по идентификатору отеля
+message ListRoomsByHotelRequest {
+  int32 hotel_id = 1;             // Идентификатор отеля
+}
+
+// Ответ со списком комнат
+message ListRoomsByHotelResponse {
+  repeated Room rooms = 1;        // Список комнат
+}
+
+// Сервис для управления комнатами
+service RoomService {
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+  rpc GetRoom(GetRoomRequest) returns (GetRoomResponse);
+  rpc UpdateRoom(UpdateRoomRequest) returns (UpdateRoomResponse);
+  rpc DeleteRoom(DeleteRoomRequest) returns (DeleteRoomResponse);
+  rpc ListRoomsByHotel(ListRoomsByHotelRequest) returns (ListRoomsByHotelResponse);
+}

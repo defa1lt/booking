@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package booking;
+
+import "protos/booking/common.proto";
+
+option go_package = "bookingpb";
+
+// Определение сущности отеля
+message Hotel {
+  int32 id = 1;          // Идентификатор отеля
+  string name = 2;       // Название отеля
+  string address = 3;    // Адрес отеля
+}
+
+// Запрос на создание отеля
+message CreateHotelRequest {
+  string name = 1;       // Название отеля
+  string address = 2;    // Адрес отеля
+}
+
+// Ответ на создание отеля
+message CreateHotelResponse {
+  Hotel hotel = 1;       // Созданный отель
+}
+
+// Запрос на получение информации об отеле
+message GetHotelRequest {
+  int32 id = 1;          // Идентификатор отеля
+}
+
+// Ответ с информацией об отеле
+message GetHotelResponse {
+  Hotel hotel = 1;       // Информация об отеле
+}
+
+// Запрос на обновление отеля
+message UpdateHotelRequest {
+  int32 id = 1;          // Идентификатор отеля
+  string name = 2;       // Новое название (опционально)
+  string address = 3;    // Новый адрес (опционально)
+}
+
+// Ответ на обновление отеля
+message UpdateHotelResponse {
+  Hotel hotel = 1;       // Обновленный отель
+}
+
+// Запрос на удаление отеля
+message DeleteHotelRequest {
+  int32 id = 1;          // Идентификатор отеля
+}
+
+// Ответ на удаление отеля
+message DeleteHotelResponse {
+  bool success = 1;      // Статус операции
+}
+
+// Запрос на получение списка всех отелей
+message ListHotelsRequest {}
+
+// Ответ со списком отелей
+message ListHotelsResponse {
+  repeated Hotel hotels = 1; // Список отелей
+}
+
+// Сервис для управления отелями
+service HotelService {
+  rpc CreateHotel(CreateHotelRequest) returns (CreateHotelResponse);
+  rpc GetHotel(GetHotelRequest) returns (GetHotelResponse);
+  rpc UpdateHotel(UpdateHotelRequest) returns (UpdateHotelResponse);
+  rpc DeleteHotel(DeleteHotelRequest) returns (DeleteHotelResponse);
+  rpc ListHotels(ListHotelsRequest) returns (ListHotelsResponse);
+}

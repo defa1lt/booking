@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package booking.common;
+
+// Общие перечисления и сообщения, используемые во всем проекте
+
+// Статус бронирования
+enum BookingStatus {
+  BOOKING_STATUS_UNSPECIFIED = 0; // Не указано
+  BOOKING_STATUS_PENDING = 1;     // Ожидает подтверждения
+  BOOKING_STATUS_CONFIRMED = 2;   // Подтверждено
+  BOOKING_STATUS_CANCELLED = 3;   // Отменено
+}
+
+// Тип комнаты
+enum RoomType {
+  ROOM_TYPE_UNSPECIFIED = 0; // Не указано
+  ROOM_TYPE_SINGLE = 1;      // Одноместный номер
+  ROOM_TYPE_DOUBLE = 2;      // Двухместный номер
+  ROOM_TYPE_SUITE = 3;       // Люкс
+}
